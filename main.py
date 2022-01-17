@@ -1,9 +1,44 @@
-import os
 import sys
 import pygame
-from easy import main, base
-from hard import main1
+from uno import main
+import sqlite3
 
+
+def base():
+    conn = sqlite3.connect('cards.db')
+    cur = conn.cursor()
+    cur.execute("""CREATE TABLE IF NOT EXISTS cards(
+                    num INT,
+                    eng TEXT,
+                    color INT);""")
+    conn.commit()
+
+    more = [('0', 'zero', 'blue'), ('1', 'one', 'blue'), ('2', 'two', 'blue'),
+            ('3', 'three', 'blue'),
+            ('4', 'four', 'blue'),
+            ('5', 'five', 'blue'), ('6', 'six', 'blue'),
+            ('7', 'seven', 'blue'), ('8', 'eight', 'blue'),
+            ('9', 'nine', 'blue'), ('0', 'zero', 'red'), ('1', 'one', 'red'), ('2', 'two', 'red'),
+            ('3', 'three', 'red'),
+            ('4', 'four', 'red'),
+            ('5', 'five', 'red'), ('6', 'six', 'red'),
+            ('7', 'seven', 'red'), ('8', 'eight', 'red'),
+            ('9', 'nine', 'red'), ('0', 'zero', 'yellow'), ('1', 'one', 'yellow'), ('2', 'two', 'yellow'),
+            ('3', 'three', 'yellow'),
+            ('4', 'four', 'yellow'),
+            ('5', 'five', 'yellow'), ('6', 'six', 'yellow'),
+            ('7', 'seven', 'yellow'), ('8', 'eight', 'yellow'),
+            ('9', 'nine', 'yellow'), ('0', 'zero', 'green'), ('1', 'one', 'green'), ('2', 'two', 'green'),
+            ('3', 'three', 'green'),
+            ('4', 'four', 'green'),
+            ('5', 'five', 'green'), ('6', 'six', 'green'),
+            ('7', 'seven', 'green'), ('8', 'eight', 'green'),
+            ('9', 'nine', 'green')]
+    cur.executemany("INSERT INTO cards VALUES(?, ?, ?);", more)
+    conn.commit()
+
+
+base()
 pygame.init()
 pygame.key.set_repeat(200, 70)
 FPS = 50
@@ -12,26 +47,10 @@ HEIGHT = 268
 STEP = 10
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
-pygame.display.set_caption('UNO')
+pygame.display.set_caption('Welcome to UNO')
 start_button = pygame.draw.rect(screen, (0, 0, 240), (150, 20, 100, 50))
 continue_button = pygame.draw.rect(screen, (0, 244, 0), (150, 160, 100, 50))
 quit_button = pygame.draw.rect(screen, (244, 0, 0), (150, 230, 100, 50))
-
-
-def load_image(name, color_key=None):
-    fullname = os.path.join('data', name)
-    try:
-        image = pygame.image.load(fullname)
-    except pygame.error as message:
-        print('Cannot load image:', name)
-        raise SystemExit(message)
-    if color_key is not None:
-        if color_key == -1:
-            color_key = image.get_at((0, 0))
-        image.set_colorkey(color_key)
-    else:
-        image = image.convert_alpha()
-    return image
 
 
 def button(screen, position, text):
@@ -47,9 +66,8 @@ def button(screen, position, text):
     return screen.blit(text_render, (x, y))
 
 
-def start():
-    base()
-    main()
+def start(level):
+    main(level)
 
 
 def terminate():
@@ -58,7 +76,7 @@ def terminate():
 
 
 def start_screen():
-    fon = pygame.transform.scale(load_image('fon4.png'), (WIDTH, HEIGHT))
+    fon = pygame.transform.scale(pygame.image.load('data/fon4.png'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
     font = pygame.font.SysFont('Segoe UI Black', 30)
     text = font.render('Привет!', True, (255, 215, 0))
@@ -85,22 +103,19 @@ def start_screen():
                     pygame.quit()
                 key_to_start = event.key == pygame.K_s or event.key == pygame.K_RIGHT or event.key == pygame.K_UP
                 if key_to_start:
-                    start()
+                    start('easy')
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if b1.collidepoint(pygame.mouse.get_pos()):
                     pygame.quit()
                 elif b2.collidepoint(pygame.mouse.get_pos()):
-                    start()
+                    start('easy')
                 elif b3.collidepoint(pygame.mouse.get_pos()):
-                    main1()
+                    start('hard')
         pygame.display.flip()
         clock.tick(FPS)
 
 
 start_screen()
-
-
-# Главный Игровой цикл
 running = True
 while running:
     WIDTH, HEIGHT = pygame.display.get_window_size()
