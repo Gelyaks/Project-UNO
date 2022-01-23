@@ -4,6 +4,42 @@ from random import choice
 from win import win
 from lost import lost
 
+
+def base():
+    conn = sqlite3.connect('cards.db')
+    cur = conn.cursor()
+    cur.execute("""CREATE TABLE IF NOT EXISTS cards(
+                    num INT,
+                    eng TEXT,
+                    color INT);""")
+    conn.commit()
+
+    more = [('0', 'zero', 'blue'), ('1', 'one', 'blue'), ('2', 'two', 'blue'),
+            ('3', 'three', 'blue'),
+            ('4', 'four', 'blue'),
+            ('5', 'five', 'blue'), ('6', 'six', 'blue'),
+            ('7', 'seven', 'blue'), ('8', 'eight', 'blue'),
+            ('9', 'nine', 'blue'), ('0', 'zero', 'red'), ('1', 'one', 'red'), ('2', 'two', 'red'),
+            ('3', 'three', 'red'),
+            ('4', 'four', 'red'),
+            ('5', 'five', 'red'), ('6', 'six', 'red'),
+            ('7', 'seven', 'red'), ('8', 'eight', 'red'),
+            ('9', 'nine', 'red'), ('0', 'zero', 'yellow'), ('1', 'one', 'yellow'), ('2', 'two', 'yellow'),
+            ('3', 'three', 'yellow'),
+            ('4', 'four', 'yellow'),
+            ('5', 'five', 'yellow'), ('6', 'six', 'yellow'),
+            ('7', 'seven', 'yellow'), ('8', 'eight', 'yellow'),
+            ('9', 'nine', 'yellow'), ('0', 'zero', 'green'), ('1', 'one', 'green'), ('2', 'two', 'green'),
+            ('3', 'three', 'green'),
+            ('4', 'four', 'green'),
+            ('5', 'five', 'green'), ('6', 'six', 'green'),
+            ('7', 'seven', 'green'), ('8', 'eight', 'green'),
+            ('9', 'nine', 'green')]
+    cur.executemany("INSERT INTO cards VALUES(?, ?, ?);", more)
+    conn.commit()
+
+
+base()
 numbers = []
 colors = []
 conn = sqlite3.connect('cards.db')
